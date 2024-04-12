@@ -16,6 +16,7 @@ use Entity\ProjectHistory;
 use Entity\UserAccount;
 use Entity\UserInformation;
 use Firebase\JWT\ExpiredException;
+use Membership;
 use Ramsey\Uuid\Uuid;
 
 class ProjectStorage implements IProjectStorage
@@ -218,4 +219,5 @@ class ProjectStorage implements IProjectStorage
       throw new Exception($e->getMessage(), 500);
     }
   }
+
 }
