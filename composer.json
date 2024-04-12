@@ -1,0 +1,20 @@
+{
+  "require": {
+    "ramsey/uuid":"4.7.5",
+    "slim/slim": "^4.13",
+    "slim/psr7": "^1.6",
+    "phpmailer/phpmailer": "^6.9",
+    "tuupola/cors-middleware": "^1.4",
+    "firebase/php-jwt": " ^5.4"
+  },
+  "autoload": {
+    "psr-4": {
+        "Storage\\": "storage/",
+        "Service\\": "service/",
+        "Controller\\": "controller/",
+        "Entity\\": "entity/",
+        "Middleware\\": "middleware/" 
+    }
+}
+
+}

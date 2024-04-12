@@ -1,0 +1,145 @@
+1 Tao route trong file server\index.php
+ex: 
+$app->put("/v1/projects/{project_id}", function (Request $req, Response $res) use ($projectController){
+  return $projectController->updateProject($req, $res);
+});
+
+
+
+2. Code function trong server\controller\ProjectController.php:
+public function updateProject(Request $req, Response $res)
+  {
+    try{
+      $requestBody = $req->getBody()->getContents();
+      $requestBody = json_decode($requestBody, true);
+
+      if (!isset($requestBody['projectName'])) {
+        throw new Exception("Name is required", 400);
+      }
+
+      if (!isset($requestBody['description'])) {
+        throw new Exception("Description is required", 400);
+      }
+      
+      $projectName = $requestBody['projectName'];
+      $description = $requestBody['description'];
+      $projectID = $req->getAttribute('project_id');
+
+      $project = new Project($projectID, $projectName, $description,null, null);
+
+      $this->service->updateAProject($project);
+      $res = $res->withStatus(200);
+      $res->getBody()->write(json_encode("update successfully"));
+      return $res;
+    }catch(Exception $e){
+      if($e->getCode() == 400){
+        $res = $res->withStatus(400);
+        $res->getBody()->write($e->getMessage());
+      }else{
+        $res = $res->withStatus(500);
+        $res->getBody()->write($e->getMessage());
+      }
+      return $res;
+    }
+  }
+
+
+
+3. Tạo function mới trong service: server\service\ProjectService.php
+ex: 
+public function updateAProject(Project $project){
+    if($project->getName() == ""){
+      throw new Exception("Project name cannot be blank", 400);
+    }
+    
+    return $this->store->updateAProject($project);
+  }
+
+
+4. Kiểm tra function trong store: server\storage\IProjectStorage.php
+ex: public function updateAProject(Project $project);
+
+
+5. Update function trong server\storage\ProjectStorage.php:
+public function updateAProject(Project $project) {
+    try{
+      $query = 'UPDATE projects SET project_name = ?, description = ? WHERE project_id = ?;';
+
+      $stmt = $this->db->getConn()->prepare($query);
+      $stmt->bindValue(1, $project->getName(), PDO::PARAM_STR);
+      $stmt->bindValue(2, $project->getDescription(), PDO::PARAM_STR);
+      $stmt->bindValue(3, $project->getProjectID(), PDO::PARAM_INT);
+      $stmt->execute();
+    }catch(PDOException $e){
+      throw new Exception($e->getMessage(), 500);
+    }
+  }
+
+
+Lưu ý cần chỉnh sửa connect DB trước khi code:
+server\storage\PDOManager.php
+
+Ex:  $servername = "localhost";
+    $username = "root"; // Replace with your actual username
+    $password = ""; // Replace with your actual password
+    $this->conn = new PDO("mysql:host=$servername;port=33066;dbname=project_management", $username, $password);
+    $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+
+
+    public function updateAssignedUSer(Request $req, Response $res){
+    try {
+         
+      $requestBody = $req->getBody()->getContents();
+      $requestBody = json_decode($requestBody, true);
+      if (!isset($requestBody['user_id'])) {
+          throw new Exception("User ID is required", 400);
+      }
+      $userID = $requestBody['user_id'];
+      $taskID = $req->getAttribute('task_id'); 
+      $projectID = $req->getAttribute('project_id'); 
+
+      $task = new Task($taskID, null, $projectID, $userID, null, null);
+      $this->service->updateStatus($userID,$taskID);
+      
+      $res = $res->withStatus(200);
+      $res->getBody()->write(json_encode(array("Assigned UserID updated successfully",
+       "taskID"  => $taskID,
+       "AsigneduserID" => $userID
+      )
+    ));
+      return $res;
+}catch(Exception $e){
+    if($e->getCode() == 404){
+      $res = $res->withStatus(404);
+      $res->getBody()->write($e->getMessage());
+    }else{
+      $res = $res->withStatus(500);
+      $res->getBody()->write($e->getMessage());
+    }
+    return $res;
+  }
+}
+
+----------------------------------------------------------------
+
+  public function updateAssignedUSer(String $userID,String $taskID):void{
+    try {
+     
+      $query = 'UPDATE tasks SET user_id = ? WHERE task_id = ?;'; 
+      $stmt = $this->db->getConn()->prepare($query);
+      
+      $stmt->execute([$userID,$taskID]);
+      $result = $stmt->rowCount();
+      if ($result ==0)
+      {
+        throw new Exception ("No Task Found",404);
+      }
+   }catch(PDOException $e){ 
+    throw new Exception($e->getMessage(),500);
+  }
+}
+------------------------------------------------------------------------------------
+ public function updateAssignedUSer(String $userID, String $taskID):void{
+    $this->store->updateAssignedUSer($userID,$taskID);
+  }
