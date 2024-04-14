@@ -44,5 +44,25 @@ class MembershipStorage implements IMembership
 
 
   public function updateMembership(Membership $membership){}
-  public function deleteMembership(Membership $membership){}
+
+  public function deleteMembership(String $user_id, String $project_id){
+    try{
+      $this->db->getConn()->beginTransaction();
+
+      $query = "delete from memberships where user_id = ? and project_id = ?";
+      $stmt = $this->db->getConn()->prepare($query);
+      $stmt->execute([$user_id, $project_id]);
+
+      $query = "insert into project_history_member values (?, ?, ?, ?, ?, ?)";
+      $stmt = $this->db->getConn()->prepare($query);
+      $now = new DateTime();
+      $stmt->execute([Uuid::uuid4(), $project_id, $user_id, "leave", null, $now->format("Y-m-d H:i:s")]);
+
+      $this->db->getConn()->commit();
+
+    }catch(Exception $e){
+      $this->db->getConn()->rollBack();
+      throw new Exception($e->getMessage(), 500);
+    }
+  }
 }

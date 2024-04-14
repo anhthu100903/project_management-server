@@ -13,5 +13,7 @@ class MembershipService{
   public function addMembership(Membership $membership){
     $this->store->insertMembership($membership);
   }
-  
+  public function deleteMembership(String $user_id, String $project_id){
+    $this->store->deleteMembership($user_id, $project_id);
+  }
 }

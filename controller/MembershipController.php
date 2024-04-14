@@ -55,4 +55,20 @@ class MembershipController
       return $res;
     }
   }
+
+  public function RemoveMembership(Request $req, Response $res){
+    try{
+      $user_id = $req->getAttribute('user_id');
+      $project_id = $req->getAttribute('project_id');
+
+      $this->service->deleteMembership($user_id, $project_id);
+      $res = $res->withStatus(200);
+      $res->getBody()->write(json_encode("successfully deleted"));
+      return $res;
+    }catch(Exception $e){
+      $res = $res->withStatus(500);
+      $res->getBody()->write(json_encode($e->getMessage()));
+      return $res;
+    }
+  }
 }

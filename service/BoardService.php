@@ -25,7 +25,7 @@ class BoardService{
     $this->store->deleteBoard($projectID);
   }
 
-  public function addBoards(Board $board, String $nextBoardID): void{
+  public function addBoards(Board $board, ?String $nextBoardID): void{
    
     if($board->getName() == ""){
       throw new Exception("Board name cannot be blank", 400);

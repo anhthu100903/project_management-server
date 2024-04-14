@@ -21,7 +21,7 @@ class BoardStorage implements IBoardStorage
     }
   }
 
-  public function insertBoard(Board $board, String $nextBoardID): void
+  public function insertBoard(Board $board, ?String $nextBoardID): void
   {
     try {
       $this->db->getConn()->beginTransaction();
@@ -98,7 +98,7 @@ class BoardStorage implements IBoardStorage
   public function getBoardsOfProject(String $projectID): array
   {
     try {
-      $query = 'select * from boards where project_id = ?';
+      $query = 'WITH RECURSIVE BoardList AS (SELECT board_id, board_name, project_id, previous_board_id FROM boards WHERE project_id = ? and previous_board_id IS NULL UNION ALL SELECT b.board_id, b.board_name, b.project_id, b.previous_board_id FROM boards b INNER JOIN BoardList bl ON b.previous_board_id = bl.board_id) SELECT * FROM BoardList;';
       $stmt = $this->db->getConn()->prepare($query);
       $stmt->execute([$projectID]);
 

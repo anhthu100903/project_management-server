@@ -206,7 +206,7 @@ class ProjectStorage implements IProjectStorage
   {
     try {
       $histories = [];
-      $query = "select id, pr.user_id, status, type, email, create_at, email, first_name, last_name, avatar_url, color from project_history_member pr join user_informations us on pr.project_id = ? and pr.user_id = us.user_id;";
+      $query = "select id, pr.user_id, status, type, email, create_at, email, first_name, last_name, avatar_url, color from project_history_member pr join user_informations us on pr.project_id = ? and pr.user_id = us.user_id order by create_at DESC;";
       $stmt = $this->db->getConn()->prepare($query);
       $stmt->execute([$project_id]);
       $data = $stmt->fetchAll(PDO::FETCH_ASSOC);

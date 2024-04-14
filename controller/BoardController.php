@@ -92,7 +92,7 @@ class BoardController
       }
 
       if (!isset($data->next_board_id)) {
-        throw new Exception("Next board ID is required", 400);
+        $data->next_board_id = null;
       }
 
       $projectID = $req->getAttribute('project_id');
