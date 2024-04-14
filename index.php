@@ -258,8 +258,12 @@ $app->group("/v1/workspaces", function ($workspace) {
 
         $one_project->group("/boards", function ($board) {
           $board->get("", function (Request $req, Response $res) {
+            global $boardController;
+            return $boardController->GetBoads($req, $res);
           });
           $board->post("", function (Request $req, Response $res) {
+            global $boardController;
+            return $boardController->addBoards($req, $res);
           });
 
           $board->group("/{board_id}", function ($one_board) {
@@ -281,13 +285,15 @@ $app->group("/v1/workspaces", function ($workspace) {
             return $membershipController->CreateMembership($req, $res);
           });
 
-          $member->group("/{member_id}", function ($one_member) {
+          $member->group("/{user_id}", function ($one_member) {
 
             $one_member->get("", function (Request $req, Response $res) {
             });
             $one_member->put("", function (Request $req, Response $res) {
             });
             $one_member->delete("", function (Request $req, Response $res) {
+              global $membershipController;
+              return $membershipController->RemoveMembership($req, $res);
             });
           });
         });
