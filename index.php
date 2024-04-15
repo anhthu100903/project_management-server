@@ -191,9 +191,11 @@ $app->group("/v1/workspaces", function ($workspace) {
         $one_project->delete("", function (Request $req, Response $res) {
         });
 
-        $one_project->group("/tasks", function ($task) {
+        $one_project->group("/tasks", function ($task)  {
 
-          $task->get("", function (Request $req, Response $res) {
+          $task->get("", function (Request $req, Response $res){
+            global $taskController;
+            return $taskController->GetTasksOfProject($req, $res);
           });
           $task->post("", function (Request $req, Response $res) {
           });
@@ -203,6 +205,8 @@ $app->group("/v1/workspaces", function ($workspace) {
             $one_task->get("", function (Request $req, Response $res) {
             });
             $one_task->put("", function (Request $req, Response $res) {
+              global $taskController;
+              return $taskController->updateTask($req, $res);
             });
             $one_task->delete("", function (Request $req, Response $res) {
             });

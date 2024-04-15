@@ -37,9 +37,9 @@ class TaskService{
     $this->store->updateAssignedUSer($assignedUserID,$taskID);
   }
   public function updateTask(Task $task):void{
-    if($task->getName() == ""){
-      throw new Exception("Task name cannot be blank", 400);
-    }
+    // if($task->getName() == ""){
+    //   throw new Exception("Task name cannot be blank", 400);
+    // }
     $this->store->updateTask($task);
   }
 

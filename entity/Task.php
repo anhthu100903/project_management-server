@@ -141,6 +141,7 @@ class Task implements JsonSerializable
         return array(
             'taskID' => $this->taskID,
             'name' => $this->name,
+            'description' => $this->description,
             'projectID' => $this->projectID,
             'assigned_user_id' => $this->assignedUserID,
             'boardID' => $this->boardID,
